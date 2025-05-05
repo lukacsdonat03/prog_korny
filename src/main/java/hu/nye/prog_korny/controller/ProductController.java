@@ -1,6 +1,7 @@
 package hu.nye.prog_korny.controller;
 
 import hu.nye.prog_korny.domain.Product;
+import hu.nye.prog_korny.service.ProductCategoryService;
 import hu.nye.prog_korny.service.ProductService;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,17 +17,29 @@ import java.util.Optional;
 public class ProductController {
 
     private final ProductService productService;
+    private final ProductCategoryService productCategoryService;
 
     @Autowired
-    public ProductController(ProductService productService){
+    public ProductController(ProductService productService,ProductCategoryService productCategoryService){
         this.productService = productService;
+        this.productCategoryService = productCategoryService;
     }
 
     @PostMapping
-    public ResponseEntity<Product> createOrUpdateProduct(@RequestBody Product product){
-        Product savedProduct = productService.saveProduct(product);
-        return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
+    public ResponseEntity<Product> createOrUpdateProduct(@RequestBody Product product) {
+        if (product.getCategory() == null || product.getCategory().getId() == null) {
+            return ResponseEntity.badRequest().build(); // hibás kérés, nincs kategória megadva
+        }
+
+        return productCategoryService.findById(product.getCategory().getId())
+                .map(category -> {
+                    product.setCategory(category); // lecseréljük a detached példányt
+                    Product savedProduct = productService.saveProduct(product);
+                    return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
+                })
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST).build()); // nem létező kategória
     }
+
 
     @GetMapping
     public List<Product> getAllProducts(){
