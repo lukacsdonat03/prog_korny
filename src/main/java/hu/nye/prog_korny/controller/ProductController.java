@@ -83,9 +83,21 @@ public class ProductController {
     @PostMapping("/create")
     public String createProduct(@ModelAttribute Product product, Model model) {
         if (product.getCategory() == null || product.getCategory().getId() == null) {
-            model.addAttribute("error", "Product category must be selected.");
+            model.addAttribute("error", "Termék kategória nem lehet üres!");
             return "product-form";
         }
+
+        if (product.getStock() == null || product.getStock() < 0) {
+            model.addAttribute("error", "A készlet nem lehet negatív.");
+            return "product-form";
+        }
+
+        if(product.getName() == null || product.getName().trim().isEmpty()){
+            model.addAttribute("error", "A termék neve nem lehet üress!");
+            return "product-form";
+        }
+
+
         productCategoryService.findById(product.getCategory().getId())
                 .ifPresent(category -> {
                     product.setCategory(category);
@@ -107,8 +119,24 @@ public class ProductController {
     }
 
     @PostMapping("/edit/{id}")
-    public String updateProduct(@PathVariable Long id, @ModelAttribute Product product) {
+    public String updateProduct(@PathVariable Long id, @ModelAttribute Product product, Model model) {
         product.setId(id);
+
+        if (product.getCategory() == null || product.getCategory().getId() == null) {
+            model.addAttribute("error", "Termék kategória nem lehet üres!");
+            return "product-form";
+        }
+
+        if (product.getStock() == null || product.getStock() < 0) {
+            model.addAttribute("error", "A készlet nem lehet negatív.");
+            return "product-form";
+        }
+
+        if(product.getName() == null || product.getName().trim().isEmpty()){
+            model.addAttribute("error", "A termék neve nem lehet üress!");
+            return "product-form";
+        }
+
         productService.saveProduct(product);
         return "redirect:/products/view";
     }

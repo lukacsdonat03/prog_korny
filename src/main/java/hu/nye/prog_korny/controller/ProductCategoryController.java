@@ -79,6 +79,12 @@ public class ProductCategoryController {
 
     @PostMapping("/create")
     public String createCategory(@ModelAttribute ProductCategory category,Model model){
+
+        if(category.getName() == null || category.getName().trim().isEmpty()){
+            model.addAttribute("error", "Termék kategória neve nem lehet üres!");
+            return "category-form";
+        }
+
         service.save(category);
         return "redirect:/categories/view";
     }
@@ -94,7 +100,13 @@ public class ProductCategoryController {
     }
 
     @PostMapping("/edit/{id}")
-    public String updateCategory(@PathVariable Long id, @ModelAttribute ProductCategory category){
+    public String updateCategory(@PathVariable Long id, @ModelAttribute ProductCategory category, Model model){
+
+        if(category.getName() == null || category.getName().trim().isEmpty()){
+            model.addAttribute("error", "Termék kategória neve nem lehet üres!");
+            return "category-form";
+        }
+
         category.setId(id);
         service.save(category);
         return "redirect:/categories/view";

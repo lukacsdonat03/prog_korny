@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 
 @Entity
 @Data
@@ -20,6 +21,8 @@ public class Product {
     private String name;
     private String description;
     private Double price;
+    @Value("0")
+    private Integer stock;
 
     @ManyToOne
     @JoinColumn(name = "category_id",nullable = true)
