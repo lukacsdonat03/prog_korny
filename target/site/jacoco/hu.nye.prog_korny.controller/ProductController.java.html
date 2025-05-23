@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="hu"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">prog_korny</a> &gt; <a href="index.source.html" class="el_package">hu.nye.prog_korny.controller</a> &gt; <span class="el_source">ProductController.java</span></div><h1>ProductController.java</h1><pre class="source lang-java linenums">package hu.nye.prog_korny.controller;
+
+import hu.nye.prog_korny.domain.Product;
+import hu.nye.prog_korny.service.ProductCategoryService;
+import hu.nye.prog_korny.service.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+import java.util.Optional;
+
+@Controller
+@RequestMapping(&quot;/products&quot;)
+public class ProductController {
+
+    private final ProductService productService;
+    private final ProductCategoryService productCategoryService;
+
+    @Autowired
+<span class="fc" id="L25">    public ProductController(ProductService productService, ProductCategoryService productCategoryService) {</span>
+<span class="fc" id="L26">        this.productService = productService;</span>
+<span class="fc" id="L27">        this.productCategoryService = productCategoryService;</span>
+<span class="fc" id="L28">    }</span>
+
+    @PostMapping
+    @ResponseBody
+    public ResponseEntity&lt;Product&gt; createOrUpdateProduct(@RequestBody Product product) {
+<span class="pc bpc" id="L33" title="1 of 4 branches missed.">        if (product.getCategory() == null || product.getCategory().getId() == null) {</span>
+<span class="fc" id="L34">            return ResponseEntity.badRequest().build();</span>
+        }
+
+<span class="fc" id="L37">        return productCategoryService.findById(product.getCategory().getId())</span>
+<span class="fc" id="L38">                .map(category -&gt; {</span>
+<span class="fc" id="L39">                    product.setCategory(category);</span>
+<span class="fc" id="L40">                    Product savedProduct = productService.saveProduct(product);</span>
+<span class="fc" id="L41">                    return new ResponseEntity&lt;&gt;(savedProduct, HttpStatus.CREATED);</span>
+                })
+<span class="pc" id="L43">                .orElseGet(() -&gt; ResponseEntity.status(HttpStatus.BAD_REQUEST).build());</span>
+    }
+
+    @GetMapping
+    @ResponseBody
+    public List&lt;Product&gt; getAllProducts() {
+<span class="fc" id="L49">        return productService.getAllProducts();</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    @ResponseBody
+    public ResponseEntity&lt;Product&gt; getProductById(@PathVariable Long id) {
+<span class="fc" id="L55">        Optional&lt;Product&gt; product = productService.getProductByid(id);</span>
+<span class="fc" id="L56">        return product.map(ResponseEntity::ok)</span>
+<span class="fc" id="L57">                .orElseGet(() -&gt; ResponseEntity.status(HttpStatus.NOT_FOUND).build());</span>
+    }
+
+    @PostMapping(&quot;/{id}/delete&quot;)
+    public String deleteProduct(@PathVariable Long id) {
+<span class="fc" id="L62">        productService.deleteProduct(id);</span>
+<span class="fc" id="L63">        return &quot;redirect:/products/view&quot;;</span>
+    }
+
+
+    @GetMapping(&quot;/view&quot;)
+    public String viewProducts(Model model) {
+<span class="fc" id="L69">        List&lt;Product&gt; products = productService.getAllProducts();</span>
+<span class="fc" id="L70">        model.addAttribute(&quot;products&quot;, products);</span>
+<span class="fc" id="L71">        return &quot;product-list&quot;;</span>
+    }
+
+    @GetMapping(&quot;/create&quot;)
+    public String showCreateProductForm(Model model) {
+<span class="fc" id="L76">        model.addAttribute(&quot;product&quot;, new Product());</span>
+<span class="fc" id="L77">        model.addAttribute(&quot;categories&quot;, productCategoryService.findAll());</span>
+<span class="fc" id="L78">        model.addAttribute(&quot;formAction&quot;, &quot;/products/create&quot;);</span>
+<span class="fc" id="L79">        model.addAttribute(&quot;formTitle&quot;,&quot;Termék létrehozása&quot;);</span>
+<span class="fc" id="L80">        return &quot;product-form&quot;;</span>
+    }
+
+    @PostMapping(&quot;/create&quot;)
+    public String createProduct(@ModelAttribute Product product, Model model) {
+<span class="nc bnc" id="L85" title="All 4 branches missed.">        if (product.getCategory() == null || product.getCategory().getId() == null) {</span>
+<span class="nc" id="L86">            model.addAttribute(&quot;error&quot;, &quot;Termék kategória nem lehet üres!&quot;);</span>
+<span class="nc" id="L87">            return &quot;product-form&quot;;</span>
+        }
+
+<span class="nc bnc" id="L90" title="All 4 branches missed.">        if (product.getStock() == null || product.getStock() &lt; 0) {</span>
+<span class="nc" id="L91">            model.addAttribute(&quot;error&quot;, &quot;A készlet nem lehet negatív.&quot;);</span>
+<span class="nc" id="L92">            return &quot;product-form&quot;;</span>
+        }
+
+<span class="nc bnc" id="L95" title="All 4 branches missed.">        if(product.getName() == null || product.getName().trim().isEmpty()){</span>
+<span class="nc" id="L96">            model.addAttribute(&quot;error&quot;, &quot;A termék neve nem lehet üress!&quot;);</span>
+<span class="nc" id="L97">            return &quot;product-form&quot;;</span>
+        }
+
+
+<span class="nc" id="L101">        productCategoryService.findById(product.getCategory().getId())</span>
+<span class="nc" id="L102">                .ifPresent(category -&gt; {</span>
+<span class="nc" id="L103">                    product.setCategory(category);</span>
+<span class="nc" id="L104">                    productService.saveProduct(product);</span>
+<span class="nc" id="L105">                });</span>
+
+<span class="nc" id="L107">        return &quot;redirect:/products/view&quot;;</span>
+    }
+
+    @GetMapping(&quot;/{id}/edit&quot;)
+    public String showEditForm(@PathVariable Long id, Model model) {
+<span class="nc" id="L112">        Product product = productService.getProductByid(id)</span>
+<span class="nc" id="L113">                .orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.NOT_FOUND));</span>
+<span class="nc" id="L114">        model.addAttribute(&quot;product&quot;, product);</span>
+<span class="nc" id="L115">        model.addAttribute(&quot;categories&quot;, productCategoryService.findAll());</span>
+<span class="nc" id="L116">        model.addAttribute(&quot;formAction&quot;, &quot;/products/edit/&quot; + id);</span>
+<span class="nc" id="L117">        model.addAttribute(&quot;formTitle&quot;,&quot;Termék módosítása&quot;);</span>
+<span class="nc" id="L118">        return &quot;product-form&quot;;</span>
+    }
+
+    @PostMapping(&quot;/edit/{id}&quot;)
+    public String updateProduct(@PathVariable Long id, @ModelAttribute Product product, Model model) {
+<span class="nc" id="L123">        product.setId(id);</span>
+
+<span class="nc bnc" id="L125" title="All 4 branches missed.">        if (product.getCategory() == null || product.getCategory().getId() == null) {</span>
+<span class="nc" id="L126">            model.addAttribute(&quot;error&quot;, &quot;Termék kategória nem lehet üres!&quot;);</span>
+<span class="nc" id="L127">            return &quot;product-form&quot;;</span>
+        }
+
+<span class="nc bnc" id="L130" title="All 4 branches missed.">        if (product.getStock() == null || product.getStock() &lt; 0) {</span>
+<span class="nc" id="L131">            model.addAttribute(&quot;error&quot;, &quot;A készlet nem lehet negatív.&quot;);</span>
+<span class="nc" id="L132">            return &quot;product-form&quot;;</span>
+        }
+
+<span class="nc bnc" id="L135" title="All 4 branches missed.">        if(product.getName() == null || product.getName().trim().isEmpty()){</span>
+<span class="nc" id="L136">            model.addAttribute(&quot;error&quot;, &quot;A termék neve nem lehet üress!&quot;);</span>
+<span class="nc" id="L137">            return &quot;product-form&quot;;</span>
+        }
+
+<span class="nc" id="L140">        productService.saveProduct(product);</span>
+<span class="nc" id="L141">        return &quot;redirect:/products/view&quot;;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

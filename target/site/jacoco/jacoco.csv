@@ -1,0 +1,6 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+prog_korny,hu.nye.prog_korny.controller,ProductCategoryController,67,115,6,4,13,29,8,9,4,8
+prog_korny,hu.nye.prog_korny.controller,ProductController,159,110,25,3,34,26,19,10,6,9
+prog_korny,hu.nye.prog_korny.service,ProductCategoryService,0,26,0,0,0,8,0,5,0,5
+prog_korny,hu.nye.prog_korny.service,ProductService,11,26,0,0,3,8,2,5,2,5
+prog_korny,hu.nye.prog_korny,ProgKornyApplication,5,3,0,0,2,1,1,1,1,1

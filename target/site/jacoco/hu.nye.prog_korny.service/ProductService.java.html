@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="hu"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">prog_korny</a> &gt; <a href="index.source.html" class="el_package">hu.nye.prog_korny.service</a> &gt; <span class="el_source">ProductService.java</span></div><h1>ProductService.java</h1><pre class="source lang-java linenums">package hu.nye.prog_korny.service;
+
+
+import hu.nye.prog_korny.domain.Product;
+import hu.nye.prog_korny.domain.ProductCategory;
+import hu.nye.prog_korny.repository.ProductRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class ProductService {
+    private final ProductRepository productRepository;
+
+    @Autowired
+<span class="fc" id="L18">    public ProductService(ProductRepository productRepository){</span>
+<span class="fc" id="L19">        this.productRepository = productRepository;</span>
+<span class="fc" id="L20">    }</span>
+
+    public Product saveProduct(Product product){
+<span class="fc" id="L23">        return this.productRepository.save(product);</span>
+    }
+
+    public List&lt;Product&gt; getAllProducts(){
+<span class="fc" id="L27">        return this.productRepository.findAll();</span>
+    }
+
+    public Optional&lt;Product&gt; getProductByid(Long id){
+<span class="fc" id="L31">        return this.productRepository.findById(id);</span>
+    }
+
+    public void deleteProduct(Long id){
+<span class="fc" id="L35">        this.productRepository.deleteById(id);</span>
+<span class="fc" id="L36">    }</span>
+
+    public List&lt;Product&gt; getProductsByCategory(ProductCategory category) {
+<span class="nc" id="L39">        return productRepository.findByCategory(category);</span>
+    }
+
+    public void saveAll(List&lt;Product&gt; products) {
+<span class="nc" id="L43">        productRepository.saveAll(products);</span>
+<span class="nc" id="L44">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

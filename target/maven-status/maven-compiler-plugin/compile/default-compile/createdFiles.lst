@@ -1,0 +1,11 @@
+hu\nye\prog_korny\ProgKornyApplication.class
+hu\nye\prog_korny\repository\ProductRepository.class
+hu\nye\prog_korny\service\ProductCategoryService.class
+hu\nye\prog_korny\controller\ProductCategoryController.class
+hu\nye\prog_korny\domain\ProductCategory.class
+hu\nye\prog_korny\repository\ProductCategoryRepository.class
+hu\nye\prog_korny\domain\Product.class
+hu\nye\prog_korny\domain\ProductCategory$ProductCategoryBuilder.class
+hu\nye\prog_korny\service\ProductService.class
+hu\nye\prog_korny\domain\Product$ProductBuilder.class
+hu\nye\prog_korny\controller\ProductController.class
